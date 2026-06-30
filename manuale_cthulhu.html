@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Il Richiamo di Cthulhu — Manuale Interattivo</title>
+<style>
+  :root{
+    --bg:#0d1311; --bg2:#121b18; --panel:#16201c; --panel2:#1c2823;
+    --ink:#d8e0d4; --ink-soft:#9fb0a4; --gold:#c9a24b; --gold-soft:#e0c074;
+    --green:#5e8c6a; --green-bright:#8fd0a0; --accent:#7fb08a;
+    --red:#b5544a; --line:#2a3a32; --shadow:rgba(0,0,0,.5);
+    --crit:#6fae7d; --fumble:#b5544a;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",serif;
+    --sans:"Segoe UI",system-ui,-apple-system,Roboto,Helvetica,Arial,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;font-family:var(--serif);background:var(--bg);color:var(--ink);
+    line-height:1.7;font-size:17px;
+    background-image:radial-gradient(circle at 20% -10%,#16241d 0,transparent 55%),radial-gradient(circle at 90% 0,#1a1f2a 0,transparent 45%);
+  }
+  a{color:var(--gold-soft);text-decoration:none}
+  a:hover{color:var(--gold)}
+  /* layout */
+  .layout{display:flex;min-height:100vh}
+  /* sidebar */
+  #sidebar{
+    width:300px;flex:0 0 300px;background:linear-gradient(180deg,#0c1310,#0e1714);
+    border-right:1px solid var(--line);height:100vh;position:sticky;top:0;
+    overflow-y:auto;padding:0 0 40px;
+  }
+  #sidebar .brand{padding:22px 22px 14px;border-bottom:1px solid var(--line)}
+  #sidebar .brand h1{font-size:21px;margin:0;color:var(--gold);letter-spacing:.5px;line-height:1.25}
+  #sidebar .brand .sub{font-size:12px;color:var(--ink-soft);font-family:var(--sans);letter-spacing:2px;text-transform:uppercase;margin-top:6px}
+  .searchbox{padding:14px 18px}
+  .searchbox input{
+    width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);
+    background:#0b1210;color:var(--ink);font-family:var(--sans);font-size:14px;
+  }
+  .searchbox input:focus{outline:none;border-color:var(--gold)}
+  nav.toc{padding:4px 10px}
+  nav.toc a{
+    display:block;padding:8px 14px;border-radius:7px;color:var(--ink-soft);
+    font-family:var(--sans);font-size:14.5px;margin:1px 0;border-left:3px solid transparent;
+  }
+  nav.toc a:hover{background:var(--panel);color:var(--ink)}
+  nav.toc a.active{background:var(--panel2);color:var(--gold-soft);border-left-color:var(--gold)}
+  nav.toc .grp{font-family:var(--sans);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);padding:16px 14px 4px}
+  nav.toc a.hidden,nav.toc .grp.hidden{display:none}
+  /* main */
+  main{flex:1 1 auto;max-width:900px;margin:0 auto;padding:36px 48px 120px;width:100%}
+  .hero{
+    border:1px solid var(--line);border-radius:16px;padding:34px 36px;margin-bottom:30px;
+    background:linear-gradient(135deg,#13201b,#0f1a23);position:relative;overflow:hidden;
+  }
+  .hero h2{font-size:34px;margin:0 0 6px;color:var(--gold);letter-spacing:.5px}
+  .hero p{margin:6px 0 0;color:var(--ink-soft);max-width:62ch}
+  .hero .glyph{position:absolute;right:-20px;top:-30px;font-size:200px;opacity:.05;color:var(--green-bright);line-height:1}
+  section.doc{display:none;animation:fade .25s ease}
+  section.doc.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  h2.sec{font-size:28px;color:var(--gold);border-bottom:1px solid var(--line);padding-bottom:10px;margin:0 0 18px}
+  h3{font-size:21px;color:var(--gold-soft);margin:30px 0 10px}
+  h4{font-size:17px;color:var(--accent);font-family:var(--sans);letter-spacing:.5px;margin:22px 0 6px;text-transform:uppercase;font-size:13.5px}
+  p{margin:12px 0}
+  ul,ol{margin:12px 0;padding-left:24px}
+  li{margin:6px 0}
+  strong{color:var(--gold-soft)}
+  em{color:var(--green-bright);font-style:italic}
+  blockquote{
+    border-left:3px solid var(--green);margin:18px 0;padding:6px 18px;color:var(--ink-soft);
+    font-style:italic;background:rgba(94,140,106,.06);border-radius:0 8px 8px 0;
+  }
+  blockquote .src{display:block;font-style:normal;font-size:13px;color:var(--green);margin-top:6px;font-family:var(--sans)}
+  /* callout */
+  .callout{border:1px solid var(--line);border-left:4px solid var(--gold);background:var(--panel);border-radius:0 10px 10px 0;padding:14px 18px;margin:18px 0}
+  .callout.tip{border-left-color:var(--green-bright)}
+  .callout.warn{border-left-color:var(--red)}
+  .callout .lbl{font-family:var(--sans);font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+  .callout.tip .lbl{color:var(--green-bright)}
+  .callout.warn .lbl{color:var(--red)}
+  /* table */
+  table{border-collapse:collapse;width:100%;margin:18px 0;font-family:var(--sans);font-size:14.5px}
+  th,td{border:1px solid var(--line);padding:8px 12px;text-align:left}
+  th{background:var(--panel2);color:var(--gold-soft);font-weight:600}
+  tr:nth-child(even) td{background:rgba(255,255,255,.015)}
+  /* accordion examples */
+  details.ex{border:1px solid var(--line);border-radius:10px;margin:14px 0;background:var(--panel);overflow:hidden}
+  details.ex summary{cursor:pointer;padding:12px 18px;font-family:var(--sans);font-weight:600;color:var(--green-bright);list-style:none;display:flex;align-items:center;gap:10px}
+  details.ex summary::-webkit-details-marker{display:none}
+  details.ex summary::before{content:"▸";color:var(--gold);transition:transform .2s}
+  details.ex[open] summary::before{transform:rotate(90deg)}
+  details.ex summary:hover{background:var(--panel2)}
+  details.ex .body{padding:4px 18px 16px;border-top:1px solid var(--line)}
+  details.ex .body p:first-child{margin-top:12px}
+  .chip{display:inline-block;font-family:var(--sans);font-size:12px;padding:2px 9px;border-radius:20px;background:var(--panel2);border:1px solid var(--line);color:var(--accent);margin:2px 4px 2px 0}
+  /* dice widget */
+  .tool-card{border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:22px;margin:20px 0}
+  .dice-grid{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}
+  button.btn{
+    font-family:var(--sans);font-size:14px;cursor:pointer;border:1px solid var(--line);
+    background:var(--panel2);color:var(--ink);padding:10px 16px;border-radius:9px;transition:all .15s;
+  }
+  button.btn:hover{border-color:var(--gold);color:var(--gold-soft)}
+  button.btn.primary{background:linear-gradient(135deg,#3a5c45,#2c4636);border-color:var(--green);color:#eafff0}
+  button.btn.primary:hover{filter:brightness(1.15)}
+  .field{display:flex;flex-direction:column;gap:4px;margin:8px 0;font-family:var(--sans);font-size:13px;color:var(--ink-soft)}
+  .field input,.field select{padding:9px 11px;border-radius:8px;border:1px solid var(--line);background:#0b1210;color:var(--ink);font-family:var(--sans);font-size:15px}
+  .field input:focus,.field select:focus{outline:none;border-color:var(--gold)}
+  #d100result{margin-top:16px;text-align:center}
+  #d100result .roll{font-size:64px;font-weight:700;font-family:var(--sans);line-height:1;color:var(--ink)}
+  #d100result .lvl{font-family:var(--sans);font-size:18px;margin-top:8px;letter-spacing:1px}
+  .lvl.crit{color:var(--crit)} .lvl.extreme{color:var(--green-bright)} .lvl.hard{color:var(--gold-soft)}
+  .lvl.regular{color:var(--accent)} .lvl.fail{color:var(--ink-soft)} .lvl.fumble{color:var(--fumble)}
+  #diceLog{font-family:var(--sans);font-size:13px;color:var(--ink-soft);margin-top:14px;max-height:130px;overflow-y:auto;border-top:1px solid var(--line);padding-top:10px}
+  #diceLog div{padding:2px 0}
+  /* character sheet */
+  .sheet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin:16px 0}
+  .stat{border:1px solid var(--line);border-radius:10px;background:var(--panel2);padding:10px 12px}
+  .stat label{font-family:var(--sans);font-size:12px;color:var(--green-bright);display:block;margin-bottom:4px}
+  .stat input{width:100%;background:#0b1210;border:1px solid var(--line);border-radius:6px;color:var(--ink);padding:7px;font-family:var(--sans);font-size:18px;text-align:center}
+  .stat .hv{font-family:var(--sans);font-size:12px;color:var(--ink-soft);margin-top:5px;text-align:center}
+  .derived{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+  .derived .box{flex:1 1 130px;border:1px solid var(--line);border-radius:10px;background:linear-gradient(135deg,#16241d,#121a22);padding:12px 14px;text-align:center}
+  .derived .box .k{font-family:var(--sans);font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--gold)}
+  .derived .box .v{font-family:var(--sans);font-size:26px;font-weight:700;color:var(--green-bright);margin-top:4px}
+  /* AI */
+  #aiChat{border:1px solid var(--line);border-radius:10px;background:#0b1210;height:340px;overflow-y:auto;padding:14px;margin:14px 0;font-size:15px}
+  .msg{margin:10px 0;padding:10px 14px;border-radius:10px;max-width:88%}
+  .msg.user{background:var(--panel2);margin-left:auto;border:1px solid var(--line)}
+  .msg.ai{background:rgba(94,140,106,.1);border:1px solid var(--line)}
+  .msg.sys{background:transparent;color:var(--ink-soft);font-size:13px;text-align:center;font-family:var(--sans)}
+  .ai-input{display:flex;gap:10px}
+  .ai-input input{flex:1}
+  .small{font-size:13px;color:var(--ink-soft)}
+  .kbd{font-family:var(--sans);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;font-size:13px;color:var(--gold-soft)}
+  hr{border:none;border-top:1px solid var(--line);margin:28px 0}
+  .menutoggle{display:none}
+  /* responsive */
+  @media(max-width:860px){
+    #sidebar{position:fixed;left:0;top:0;z-index:50;transform:translateX(-100%);transition:transform .25s;box-shadow:0 0 40px var(--shadow)}
+    #sidebar.open{transform:none}
+    .menutoggle{display:inline-flex;position:fixed;top:14px;left:14px;z-index:60}
+    main{padding:70px 20px 100px}
+  }
+  ::-webkit-scrollbar{width:10px;height:10px}
+  ::-webkit-scrollbar-thumb{background:#243029;border-radius:6px}
+  ::-webkit-scrollbar-track{background:transparent}
+</style>
+</head>
+<body>
+<button class="btn menutoggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Indice</button>
+<div class="layout">
+  <aside id="sidebar">
+    <div class="brand">
+      <h1>Il Richiamo di Cthulhu</h1>
+      <div class="sub">Manuale Interattivo</div>
+    </div>
+    <div class="searchbox"><input id="search" type="search" placeholder="🔍 Cerca nel manuale…" autocomplete="off"></div>
+    <nav class="toc" id="toc"></nav>
+  </aside>
+  <main id="main">
+
+  <!-- ===================== HOME ===================== -->
+  <section class="doc active" id="home" data-title="Benvenuto">
+    <div class="hero">
+      <div class="glyph">🐙</div>
+      <h2>Benvenuto, Investigatore</h2>
+      <p>Questo è un manuale interattivo del gioco di ruolo <em>Il Richiamo di Cthulhu</em>. Imparerai a creare un personaggio, tirare i dadi, combattere, perdere la ragione di fronte all'indicibile e lanciare incantesimi proibiti. Usa l'indice a sinistra o la ricerca per spostarti.</p>
+    </div>
+    <h3>Da dove cominciare</h3>
+    <p>Se sei alle prime armi, leggi nell'ordine: <a href="#cose" onclick="go('cose')">Cos'è il gioco</a> → <a href="#sistema" onclick="go('sistema')">Il sistema di gioco</a> → <a href="#personaggio" onclick="go('personaggio')">Creare l'investigatore</a> → <a href="#combattimento" onclick="go('combattimento')">Combattimento</a> → <a href="#sanita" onclick="go('sanita')">Sanità Mentale</a>. I giocatori esperti possono saltare direttamente alle sezioni di riferimento.</p>
+    <h3>Strumenti interattivi</h3>
+    <ul>
+      <li><strong>🎲 <a href="#dadi" onclick="go('dadi')">Lanciatore di dadi</a></strong> — tira 1D100 e ottieni subito il livello di successo, oppure qualsiasi altro dado.</li>
+      <li><strong>📜 <a href="#scheda" onclick="go('scheda')">Scheda del personaggio</a></strong> — inserisci le caratteristiche e calcola in automatico valori metà/quinto, Punti Ferita, Punti Magia, Sanità, bonus ai danni e Corporatura.</li>
+      <li><strong>🤖 <a href="#ia" onclick="go('ia')">Chiedi al Manuale</a></strong> — una sezione in stile NotebookLM: collega la tua chiave API (ChatGPT o Gemini) e fai domande basate <em>esclusivamente</em> sul contenuto di questo manuale.</li>
+      <li><strong>🔍 Ricerca</strong> — filtra l'indice mentre digiti.</li>
+      <li><strong>▸ Esempi</strong> — ovunque vedi un riquadro espandibile, cliccalo per leggere un esempio di gioco.</li>
+    </ul>
+    <div class="callout tip"><div class="lbl">Suggerimento</div>Premi <span class="kbd">/</span> per saltare alla ricerca da qualsiasi punto.</div>
+  </section>
+
+  <!-- ===================== COS'È ===================== -->
+  <section class="doc" id="cose" data-title="Cos'è il gioco">
+    <h2 class="sec">Cos'è Il Richiamo di Cthulhu</h2>
+    <blockquote>La cosa più misericordiosa al mondo è l'incapacità della mente umana di mettere in correlazione tutto ciò che essa contiene.<span class="src">— H. P. Lovecraft, <em>Il Richiamo di Cthulhu</em></span></blockquote>
+    <p><em>Il Richiamo di Cthulhu</em> è un gioco di ruolo investigativo e horror ambientato nell'universo dei racconti di H. P. Lovecraft. I giocatori interpretano degli <strong>investigatori</strong>: persone comuni — professori, giornalisti, medici, detective — che indagano su misteri inquietanti e finiscono per scoprire verità cosmiche che la mente umana non è fatta per sopportare.</p>
+    <p>Un giocatore speciale, il <strong>Custode dei Segreti</strong> (il Game Master, abbreviato in "Custode"), descrive il mondo, interpreta i personaggi non giocanti e i mostri, e arbitra le regole. Gli altri giocatori interpretano ciascuno il proprio investigatore.</p>
+    <h3>Non è un gioco di "vittoria"</h3>
+    <p>A differenza di molti giochi, qui le caratteristiche elevate non garantiscono il successo e la sopravvivenza non è scontata. Gli investigatori sono fragili: una pallottola o un incontro con l'ignoto possono ucciderli o renderli folli. Il vero cuore del gioco è l'<strong>atmosfera, l'indagine e l'orrore crescente</strong>, non lo scontro.</p>
+    <div class="callout"><div class="lbl">I tre pilastri</div>L'<strong>Indagine</strong> (raccogliere indizi e ricostruire la verità), l'<strong>Orrore</strong> (la Sanità Mentale che si sgretola di fronte ai Miti), e il <strong>Rischio</strong> (ogni azione può avere conseguenze terribili).</p></div>
+    <p>Lo strumento di base del gioco è il <strong>dado percentuale (1D100)</strong>: quasi tutto si risolve tirando 1D100 e confrontando il risultato con un valore di abilità o caratteristica.</p>
+  </section>
+
+  <!-- ===================== SISTEMA ===================== -->
+  <section class="doc" id="sistema" data-title="Il sistema di gioco">
+    <h2 class="sec">Il sistema di gioco</h2>
+    <p>Quasi ogni prova nel gioco funziona così: si tira <strong>1D100</strong> (due dadi da dieci facce, uno per le decine e uno per le unità) e si confronta il risultato con il valore percentuale dell'abilità o caratteristica usata. <strong>Un risultato pari o inferiore al valore è un successo.</strong></p>
+
+    <h3>I livelli di successo</h3>
+    <p>Non basta sapere <em>se</em> si riesce: conta anche <em>quanto bene</em>. Ogni abilità ha tre soglie: il valore pieno (Normale), la metà (Difficile) e il quinto (Estremo).</p>
+    <table>
+      <thead><tr><th>Risultato del dado</th><th>Livello di successo</th></tr></thead>
+      <tbody>
+        <tr><td><strong>01</strong></td><td><span style="color:var(--crit)">Successo Critico</span> (il migliore possibile)</td></tr>
+        <tr><td>Pari o sotto il <strong>quinto</strong> del valore</td><td><span style="color:var(--green-bright)">Successo Estremo</span></td></tr>
+        <tr><td>Pari o sotto la <strong>metà</strong> del valore</td><td><span style="color:var(--gold-soft)">Successo Difficile</span></td></tr>
+        <tr><td>Pari o sotto il <strong>valore pieno</strong></td><td><span style="color:var(--accent)">Successo Normale</span></td></tr>
+        <tr><td>Sopra il valore</td><td><span style="color:var(--ink-soft)">Fallimento</span></td></tr>
+        <tr><td><strong>100</strong> (o 96–100 se il valore è sotto 50)</td><td><span style="color:var(--fumble)">Maldestro</span> (peggio di un semplice fallimento)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><div class="lbl">Esempio di soglie</div>Un investigatore con <strong>Schivare 60%</strong> riesce con un Normale tirando 60 o meno, con un Difficile tirando 30 o meno (metà), e con un Estremo tirando 12 o meno (quinto).</div>
+
+    <h3>Livello di difficoltà</h3>
+    <p>Il Custode fissa la difficoltà di una prova in base alla situazione:</p>
+    <ul>
+      <li><strong>Normale</strong>: tira pari o sotto il valore pieno. (compito ordinario)</li>
+      <li><strong>Difficile</strong>: tira pari o sotto la metà del valore. (compito impegnativo)</li>
+      <li><strong>Estremo</strong>: tira pari o sotto il quinto del valore. (compito quasi proibitivo)</li>
+    </ul>
+    <p>Se una prova è contrastata da una caratteristica pari o superiore a 90, la difficoltà diventa automaticamente <strong>Estrema</strong>. Il limite massimo affrontabile con un Estremo è <strong>100 + il valore dell'investigatore</strong>: oltre questo, l'impresa è impossibile e non si tira nemmeno (nessun umano può vincere una prova di Forza contro un mostro con FOR 220).</p>
+
+    <h3>Critico e Maldestro</h3>
+    <p>Il <strong>01</strong> è sempre un <span style="color:var(--crit)">Successo Critico</span>: oltre a riuscire, accade qualcosa di particolarmente favorevole (in combattimento, danno massimo). Il <strong>Maldestro</strong> è il rovescio: qualcosa va davvero male, peggio di un fallimento normale. Regola pratica: se il valore richiesto è 50 o più, si è maldestri solo con un <strong>100</strong>; se è sotto 50, ci si è maldestri con <strong>96–100</strong>.</p>
+    <details class="ex"><summary>Esempio — Critico e Maldestro</summary><div class="body">
+      <p>Brian valuta una strana corona d'oro (abilità Valutare 35%). Tira <strong>01</strong>: non solo ne stima il valore (esito normale), ma riconosce che proviene dai Mari del Sud, forse uno dei tesori riportati dal Capitano Marsh negli anni '30 dell'Ottocento.</p>
+      <p>Più tardi Brian incontra un ghoul. Per la prova di Sanità tira <strong>100</strong>: un Maldestro. Subisce automaticamente la perdita massima di Sanità per quella visione.</p>
+    </div></details>
+
+    <h3>Spingere un tiro</h3>
+    <p>Dopo un fallimento, un giocatore può <strong>"spingere" il tiro</strong>: descrive un nuovo, più deciso tentativo e ritira. Ma c'è un prezzo: se il tiro spinto fallisce, il Custode ha mano libera sulle conseguenze — danni, prove di Sanità, cattura, perdita di equipaggiamento. Spingere non è mai un semplice "ritira": passa del tempo e il rischio aumenta.</p>
+    <div class="callout warn"><div class="lbl">Attenzione</div>Non si possono spingere i tiri di <strong>Fortuna</strong>, di <strong>Sanità</strong>, di <strong>combattimento</strong>, né i tiri per determinare danni o perdita di Sanità.</div>
+    <details class="ex"><summary>Esempio — Tiro spinto</summary><div class="body">
+      <p>Harvey fugge dai cultisti e prova a nascondersi dietro una bancarella (Furtività, Normale). Fallisce. Decide allora di mescolarsi alla folla sperando di sparire alla vista — il Custode concede un tiro spinto, ma il rischio è alto: se fallisce verrà scoperto subito. Harvey ritira e stavolta riesce: svanisce tra la gente.</p>
+    </div></details>
+
+    <h3>Dadi bonus e dadi malus</h3>
+    <p>Invece di sommare modificatori numerici, il gioco usa <strong>dadi bonus</strong> e <strong>dadi malus</strong>. Si tira un dado delle decine in più: con un <strong>dado bonus</strong> si tiene il risultato delle decine più <em>basso</em> (più facile riuscire); con un <strong>dado malus</strong> si tiene quello più <em>alto</em> (più difficile). Si possono accumulare più dadi (di solito fino a due). Bonus e malus si annullano a vicenda uno per uno.</p>
+    <details class="ex"><summary>Esempio — Dado bonus</summary><div class="body">
+      <p>Harvey tira con un dado bonus. Le decine escono 1 e 8, le unità 9. Con il dado bonus tiene la decina più bassa: il risultato è <strong>19</strong> invece di 89.</p>
+    </div></details>
+
+    <h3>Tiri contrapposti</h3>
+    <p>Quando due personaggi si oppongono direttamente (la base del corpo a corpo), entrambi tirano e si confrontano i <strong>livelli di successo</strong>: vince chi ottiene il livello più alto. In caso di parità di livello valgono regole specifiche descritte nel combattimento.</p>
+
+    <h3>Prove combinate e limiti umani</h3>
+    <p>A volte più investigatori collaborano: a seconda del compito, può bastare <strong>un solo successo</strong> del gruppo (cercare un indizio, prestare Primo Soccorso) oppure servono <strong>tutti</strong> i successi (sgattaiolare oltre una guardia: se uno fallisce, l'allarme scatta). Per le prove fisiche di pura forza, gli investigatori possono <strong>combinare le caratteristiche</strong> sottraendole dall'ostacolo finché la prova diventa affrontabile.</p>
+
+    <h3>Tiro Idea, Conoscenza e Fortuna</h3>
+    <p>Il <strong>tiro Idea</strong> (su INT) aiuta i giocatori bloccati a trovare la pista giusta. Il <strong>tiro Conoscenza</strong> (su ISTR) rappresenta ciò che il personaggio sa per cultura generale. La <strong>Fortuna</strong> è una riserva tirata su un proprio valore, usata quando entra in gioco il caso puro (la pistola era carica? la porta era aperta?).</p>
+
+    <p class="small">Vuoi provare? Vai al <a href="#dadi" onclick="go('dadi')">🎲 Lanciatore di dadi</a> e inserisci un valore di abilità per vedere i livelli di successo calcolati in automatico.</p>
+  </section>
+
+  <!-- ===================== DADI ===================== -->
+  <section class="doc" id="dadi" data-title="🎲 Lanciatore di dadi">
+    <h2 class="sec">🎲 Lanciatore di dadi</h2>
+    <p>Inserisci il valore della tua abilità o caratteristica, scegli la difficoltà e tira 1D100: il manuale calcola automaticamente il livello di successo.</p>
+    <div class="tool-card">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="flex:1 1 160px"><label>Valore di abilità / caratteristica (%)</label><input id="skillVal" type="number" min="1" max="99" value="50"></div>
+        <div class="field" style="flex:1 1 160px"><label>Livello di difficoltà</label>
+          <select id="diffLvl"><option value="1">Normale (valore pieno)</option><option value="2">Difficile (metà)</option><option value="5">Estremo (quinto)</option></select>
+        </div>
+        <div class="field" style="flex:0 0 auto"><label>Dadi bonus/malus</label>
+          <select id="bonusDie"><option value="0">Nessuno</option><option value="1">+1 Bonus</option><option value="2">+2 Bonus</option><option value="-1">−1 Malus</option><option value="-2">−2 Malus</option></select>
+        </div>
+        <button class="btn primary" style="flex:0 0 auto;padding:12px 22px" onclick="rollD100()">Tira 1D100</button>
+      </div>
+      <div id="d100result"></div>
+    </div>
+    <h3>Altri dadi</h3>
+    <div class="tool-card">
+      <div class="dice-grid" id="otherDice"></div>
+      <div id="diceLog"></div>
+    </div>
+  </section>
+
+  <!-- ===================== PERSONAGGIO ===================== -->
+  <section class="doc" id="personaggio" data-title="Creare l'investigatore">
+    <h2 class="sec">Creare l'investigatore</h2>
+    <p>La creazione di un personaggio segue cinque passi: <strong>1)</strong> generare le caratteristiche, <strong>2)</strong> scegliere l'occupazione, <strong>3)</strong> distribuire i punti abilità, <strong>4)</strong> scrivere un retroscena, <strong>5)</strong> equipaggiarsi.</p>
+
+    <h3>Passo 1 — Le otto caratteristiche</h3>
+    <p>Ogni investigatore ha otto caratteristiche, generate tirando dei dadi e <strong>moltiplicando per 5</strong> per ottenere una percentuale (di solito tra 15 e 90).</p>
+    <table>
+      <thead><tr><th>Caratteristica</th><th>Tiro</th><th>Cosa rappresenta</th></tr></thead>
+      <tbody>
+        <tr><td><strong>FOR</strong> — Forza</td><td>3D6 × 5</td><td>Potenza muscolare; danno nel corpo a corpo.</td></tr>
+        <tr><td><strong>COS</strong> — Costituzione</td><td>3D6 × 5</td><td>Salute e vigore; a 0 si muore.</td></tr>
+        <tr><td><strong>TAG</strong> — Taglia</td><td>(2D6+6) × 5</td><td>Altezza e peso combinati; influisce su PF, danni e Corporatura.</td></tr>
+        <tr><td><strong>DES</strong> — Destrezza</td><td>3D6 × 5</td><td>Agilità e rapidità; chi ha più DES agisce per primo in combattimento.</td></tr>
+        <tr><td><strong>ASP</strong> — Aspetto</td><td>3D6 × 5</td><td>Fascino e personalità; utile nelle interazioni sociali.</td></tr>
+        <tr><td><strong>INT</strong> — Intelligenza</td><td>(2D6+6) × 5</td><td>Apprendimento e intuito; vale per i tiri Idea. Dà i punti Interessi Personali (INT × 2).</td></tr>
+        <tr><td><strong>POT</strong> — Potere</td><td>3D6 × 5</td><td>Forza di volontà; base di Sanità e Punti Magia, attitudine alla magia.</td></tr>
+        <tr><td><strong>ISTR</strong> — Istruzione</td><td>(2D6+6) × 5</td><td>Sapere formale; dà i punti abilità Occupazionali e vale per i tiri Conoscenza.</td></tr>
+      </tbody>
+    </table>
+    <p>Si tira anche la <strong>Fortuna</strong> (3D6 × 5), che <em>non</em> è una caratteristica vera e propria ma una riserva separata.</p>
+    <div class="callout tip"><div class="lbl">Le caratteristiche basse non sono un difetto</div>In questo gioco un punteggio basso rende il personaggio più vivo e reale. Una DES bassa può essere una vecchia ferita di guerra; una ISTR bassa, un'infanzia di strada. Incorpora i numeri nella storia invece di rifiutarli.</div>
+
+    <h3>Valori metà e quinto</h3>
+    <p>Per ogni caratteristica e abilità si annotano anche la <strong>metà</strong> (arrotondata per difetto) e il <strong>quinto</strong>: servono rispettivamente per i successi <em>Difficili</em> ed <em>Estremi</em>. La <a href="#scheda" onclick="go('scheda')">scheda interattiva</a> li calcola per te.</p>
+
+    <h3>Età e suoi modificatori</h3>
+    <p>Si sceglie un'età tra 15 e 90 anni. Ogni fascia ha modificatori (non cumulativi):</p>
+    <table>
+      <thead><tr><th>Età</th><th>Modificatori</th></tr></thead>
+      <tbody>
+        <tr><td>15–19</td><td>−5 tra FOR e TAG; −5 a ISTR; tira la Fortuna due volte e tieni il migliore.</td></tr>
+        <tr><td>20–39</td><td>1 prova di miglioramento ISTR.</td></tr>
+        <tr><td>40–49</td><td>2 prove ISTR; −5 tra FOR/COS/DES; −5 ASP.</td></tr>
+        <tr><td>50–59</td><td>3 prove ISTR; −10 tra FOR/COS/DES; −10 ASP.</td></tr>
+        <tr><td>60–69</td><td>4 prove ISTR; −20 tra FOR/COS/DES; −15 ASP.</td></tr>
+        <tr><td>70–79</td><td>4 prove ISTR; −40 tra FOR/COS/DES; −20 ASP.</td></tr>
+        <tr><td>80–89</td><td>4 prove ISTR; −80 tra FOR/COS/DES; −25 ASP.</td></tr>
+      </tbody>
+    </table>
+    <p class="small">Una <strong>prova di miglioramento ISTR</strong>: tira 1D100; se è maggiore della tua ISTR attuale, aggiungi 1D10 punti (ISTR non supera mai 99).</p>
+
+    <h3>Attributi derivati</h3>
+    <ul>
+      <li><strong>Punti Ferita (PF)</strong> = (COS + TAG) ÷ 10, arrotondato per difetto.</li>
+      <li><strong>Punti Magia (PM)</strong> = POT ÷ 5.</li>
+      <li><strong>Punti Sanità (SAN)</strong> iniziali = POT. La <strong>Sanità massima</strong> parte da 99 (meno i punti di Miti di Cthulhu).</li>
+      <li><strong>Bonus ai Danni (BD)</strong> e <strong>Corporatura</strong>: dipendono da FOR + TAG (vedi tabella).</li>
+    </ul>
+    <table>
+      <thead><tr><th>FOR + TAG</th><th>Bonus ai Danni</th><th>Corporatura</th></tr></thead>
+      <tbody>
+        <tr><td>2 – 64</td><td>−2</td><td>−2</td></tr>
+        <tr><td>65 – 84</td><td>−1</td><td>−1</td></tr>
+        <tr><td>85 – 124</td><td>Nessuno</td><td>0</td></tr>
+        <tr><td>125 – 164</td><td>+1D4</td><td>+1</td></tr>
+        <tr><td>165 – 204</td><td>+1D6</td><td>+2</td></tr>
+        <tr><td>205 – 284</td><td>+2D6</td><td>+3</td></tr>
+        <tr><td>285 – 364</td><td>+3D6</td><td>+4</td></tr>
+        <tr><td>365 – 444</td><td>+4D6</td><td>+5</td></tr>
+        <tr><td>445 – 524</td><td>+5D6</td><td>+6</td></tr>
+      </tbody>
+    </table>
+    <p class="small">Il Bonus ai Danni si aggiunge a ogni colpo in corpo a corpo (non alle armi da fuoco). La Corporatura conta nelle manovre di lotta e negli inseguimenti.</p>
+
+    <h3>Passo 2–5 — Occupazione, abilità, retroscena, equipaggiamento</h3>
+    <p>L'<strong>occupazione</strong> (medico, giornalista, detective, antiquario…) determina quali abilità sono "professionali" e quanti punti distribuire: i punti abilità Occupazionali si basano sulla <strong>ISTR</strong>. A questi si aggiungono i punti <strong>Interessi Personali</strong> (<strong>INT × 2</strong>), liberi da spendere in qualsiasi abilità. Infine si scrive un <strong>retroscena</strong> (legami, luoghi cari, ideali, oggetti significativi) e si sceglie l'<strong>equipaggiamento</strong> adatto all'epoca.</p>
+    <details class="ex"><summary>Esempio — Harvey Walters in breve</summary><div class="body">
+      <p>Harvey ha FOR 70 e TAG 80 (totale 150 → PF 15). Con POT 45 ha 9 Punti Magia e 45 di Sanità iniziale. La sua Fortuna è 45. La sua occupazione gli concede un buon punteggio in abilità come Persuadere e Storia.</p>
+    </div></details>
+    <div class="callout"><div class="lbl">Prova subito</div>Apri la <a href="#scheda" onclick="go('scheda')">📜 scheda interattiva</a>: inserisci i punteggi e tutti gli attributi derivati appariranno calcolati automaticamente.</div>
+  </section>
+
+  <!-- ===================== ABILITÀ ===================== -->
+  <section class="doc" id="abilita" data-title="Le abilità">
+    <h2 class="sec">Le abilità</h2>
+    <p>Le abilità sono ciò che l'investigatore sa fare, espresse in percentuale. Si usano tirando 1D100 contro il loro valore, con i livelli di successo già visti. Ogni abilità parte da un <strong>valore base</strong> (la possibilità che chiunque ha di riuscire) e cresce coi punti di occupazione e interesse personale.</p>
+    <h3>Alcune abilità chiave</h3>
+    <ul>
+      <li><strong>Scrutare (Spot Hidden)</strong> — notare dettagli e indizi nascosti. Fondamentale nell'indagine.</li>
+      <li><strong>Biblioteca (Library Use)</strong> — trovare informazioni in archivi e libri.</li>
+      <li><strong>Psicologia</strong> — intuire le intenzioni e le menzogne altrui.</li>
+      <li><strong>Schivare (Dodge)</strong> — evitare colpi e pericoli; sale di pari passo con metà della DES.</li>
+      <li><strong>Combattere (Fighting, es. Lottare)</strong> e <strong>Armi da Fuoco</strong> — le abilità di combattimento.</li>
+      <li><strong>Primo Soccorso</strong> e <strong>Medicina</strong> — curare le ferite.</li>
+      <li><strong>Furtività, Scattare, Scalare, Saltare, Persuadere, Intimidire, Charme, Inganno</strong> — un ampio ventaglio di azioni.</li>
+      <li><strong>Miti di Cthulhu</strong> — la conoscenza proibita. Cresce con l'esposizione all'orrore e <em>abbassa la Sanità massima</em> di pari quantità.</li>
+    </ul>
+    <div class="callout warn"><div class="lbl">Importante</div>Le abilità di <strong>combattimento</strong> non possono mai essere "spinte".</div>
+    <h3>Specializzazioni</h3>
+    <p>Alcune abilità si dividono in specializzazioni: <em>Combattere</em> ha <em>Lottare</em>, <em>Spada</em>, ecc.; <em>Armi da Fuoco</em> ha <em>Pistola</em>, <em>Fucile</em>, ecc. Ognuna si sale separatamente.</p>
+    <h3>Fase di sviluppo</h3>
+    <p>Dopo un'avventura, ogni abilità usata con successo viene segnata: nella fase di sviluppo si tira 1D100 per ciascuna e, se il risultato è <em>maggiore</em> del valore attuale (o è 96+), l'abilità cresce di 1D10 punti. È così che gli investigatori migliorano — imparando dall'esperienza, spesso traumatica.</p>
+  </section>
+
+  <!-- ===================== COMBATTIMENTO ===================== -->
+  <section class="doc" id="combattimento" data-title="Combattimento">
+    <h2 class="sec">Combattimento</h2>
+    <blockquote>Di sette uomini coltivati, solo Sir William Brinton mantenne la calma…<span class="src">— H. P. Lovecraft, <em>I ratti nei muri</em></span></blockquote>
+    <p>Il combattimento non si decide con un solo tiro: si susseguono più tiri, round dopo round, finché non emerge un vincitore. Prima di ogni azione il Custode chiede al giocatore <strong>cosa fa il suo personaggio</strong> (descrivendolo, non dicendo "tiro per colpire") e poi indica quale abilità usare.</p>
+
+    <h3>Il round e l'ordine d'azione</h3>
+    <p>Il combattimento è diviso in <strong>round</strong> nei quali ciascuno agisce una volta. L'ordine è dato dalla <strong>DES</strong>, dal più alto al più basso (a parità, agisce per primo chi ha l'abilità di combattimento migliore). Al proprio turno si può: attaccare, tentare una manovra, fuggire, lanciare un incantesimo, o compiere un'altra azione. Si può <strong>ritardare</strong> la propria azione per agire dopo qualcun altro.</p>
+
+    <h3>Corpo a corpo — tiro contrapposto</h3>
+    <p>È il cuore del sistema. Chi è attaccato in mischia ha due scelte:</p>
+    <ul>
+      <li><strong>Reagire (combattere)</strong> → oppone la propria abilità di <em>Combattere</em> a quella dell'attaccante.</li>
+      <li><strong>Schivare</strong> → oppone la propria <em>Schivare</em> all'attacco.</li>
+    </ul>
+    <p>Entrambi tirano 1D100 e confrontano i <strong>livelli di successo</strong>. Chi ottiene il livello migliore evita il danno e lo infligge all'avversario. Regole di parità:</p>
+    <ul>
+      <li>Se il bersaglio <strong>reagisce</strong> e c'è parità di livello → vince l'<strong>attaccante</strong>.</li>
+      <li>Se il bersaglio <strong>schiva</strong> e c'è parità → vince il <strong>difensore</strong> (schiva con successo).</li>
+      <li>Se entrambi falliscono → nessun danno.</li>
+    </ul>
+    <p>Un attacco a mani nude infligge <strong>1D3</strong> danni (più l'eventuale Bonus ai Danni).</p>
+
+    <h3>Successo Estremo: danno massimo e impalamento</h3>
+    <p>Un attacco con <strong>successo Estremo</strong> (solo nel proprio turno, non reagendo) fa danni maggiorati. Con un'arma contundente (pugno, mazza) si infliggono i <strong>danni massimi</strong> (più il bonus massimo). Con un'arma perforante (lama, proiettile) è un <strong>impalamento</strong>: danni massimi <em>più</em> un ulteriore tiro di danno dell'arma.</p>
+    <div class="callout warn"><div class="lbl">Niente "spinta"</div>I tiri di combattimento (Combattere o Armi da Fuoco) non si possono mai spingere: il tiro successivo è semplicemente il tuo prossimo attacco.</div>
+
+    <h3>Manovre di combattimento</h3>
+    <p>Se l'obiettivo non è ferire ma <strong>disarmare, atterrare, immobilizzare, spingere</strong>, si risolve con una manovra. Si confronta prima la <strong>Corporatura</strong> dei due: chi tenta la manovra con Corporatura inferiore prende un dado malus per ogni punto di differenza (max 2); con uno scarto di 3 o più la manovra è <strong>impossibile</strong> (nessun umano atterra un mostro enorme).</p>
+
+    <h3>Armi e armi improvvisate</h3>
+    <p>Qualunque oggetto si possa impugnare può essere un'arma. Armi semplici (un coltello da cucina, una gamba di sedia) usano <em>Combattere (Lottare)</em>; armi più complesse (una spada) richiedono la specializzazione apposita, eventualmente al valore base se non addestrati. Per le armi improvvisate il Custode assegna i danni di un oggetto simile in tabella. Sfruttare l'ambiente rende ogni scontro unico.</p>
+
+    <h3>Armi da fuoco</h3>
+    <p>Il tiro con arma da fuoco <strong>non è contrapposto</strong>: si tira 1D100 contro la propria abilità. La <strong>difficoltà dipende dalla distanza</strong>:</p>
+    <ul>
+      <li>Entro la <strong>gittata base</strong>: Normale.</li>
+      <li><strong>Lunga distanza</strong> (fino al doppio): Difficile.</li>
+      <li><strong>Lunghissima distanza</strong> (fino al quadruplo): Estremo.</li>
+    </ul>
+    <p>Un'arma già pronta spara con priorità <strong>DES + 50</strong> nell'ordine d'azione. Modificatori comuni — <strong>dado bonus</strong>: mirare (dichiarato il turno prima), distanza a bruciapelo, bersaglio grande. <strong>Dado malus</strong>: tuffarsi al riparo, bersaglio in corsa veloce, copertura/occultamento, sparare più colpi, sparare dentro una mischia. Non si può schivare né reagire a un colpo d'arma da fuoco come a un pugno.</p>
+    <table>
+      <thead><tr><th>Esempi di armatura</th><th>Punti</th></tr></thead>
+      <tbody>
+        <tr><td>Giubbotto di pelle pesante</td><td>1</td></tr>
+        <tr><td>Elmetto Prima Guerra Mondiale</td><td>2</td></tr>
+        <tr><td>Giubbotto antiproiettile in kevlar pesante</td><td>8</td></tr>
+        <tr><td>Armatura militare</td><td>12</td></tr>
+        <tr><td>Lastra d'acciaio da 2,5 cm</td><td>19</td></tr>
+      </tbody>
+    </table>
+    <p class="small">L'armatura sottrae i suoi punti ai danni subiti.</p>
+
+    <h3>Sorpresa e accerchiamento</h3>
+    <p>In un <strong>attacco di sorpresa</strong> (la vittima ignora il pericolo) il bersaglio non può reagire né schivare, e spesso l'attaccante ottiene un dado bonus. Quando un personaggio è <strong>in inferiorità numerica</strong>, i suoi avversari guadagnano un dado bonus dopo che lui ha già agito/reagito nel round.</p>
+
+    <h3>Danni, ferite e morte</h3>
+    <p>Tutto dipende dai <strong>Punti Ferita</strong> e dalla gravità di <em>un singolo attacco</em>:</p>
+    <table>
+      <thead><tr><th>Danno da un singolo colpo</th><th>Effetto</th></tr></thead>
+      <tbody>
+        <tr><td>Meno della metà dei PF massimi</td><td><strong>Danno normale</strong> — nessun effetto speciale finché i PF non scendono a 0.</td></tr>
+        <tr><td>Pari o più della metà dei PF massimi</td><td><strong>Ferita Grave</strong> — il personaggio cade a terra e fa un tiro di COS per non svenire.</td></tr>
+        <tr><td>Più dei PF massimi in un colpo</td><td><strong>Morte</strong> immediata.</td></tr>
+      </tbody>
+    </table>
+    <p>A <strong>0 PF</strong>: incoscienza. Se c'erano solo danni normali, si guarisce col tempo. Se è segnata una <strong>Ferita Grave</strong> e si arriva a 0, il personaggio è <strong>morente</strong>: incosciente, tira COS alla fine di ogni round e un solo fallimento significa morte. Solo il <strong>Primo Soccorso</strong> può stabilizzare un morente.</p>
+
+    <h3>Curare</h3>
+    <p>Il <strong>Primo Soccorso</strong> (entro un'ora) ridona 1 PF ed è l'unico modo per <strong>stabilizzare un morente</strong> (1 PF temporaneo, da confermare poi con Medicina). La <strong>Medicina</strong> (minimo un'ora) ridona 1D3 PF ma non può stabilizzare un morente.</p>
+
+    <details class="ex"><summary>Esempio — Un round completo (Harvey vs. Vecchio Birch)</summary><div class="body">
+      <p>Vecchio Birch (DES 60) ha la DES più alta e agisce per primo: tira un pugno, Harvey (DES 55) cerca di scansarsi. Si tira la <em>Combattere</em> di Birch contro la <em>Schivare</em> di Harvey. Birch tira <strong>04</strong> — successo Estremo. A Harvey servirebbe un Estremo per evitarlo, ma tira 25 (solo Normale): non basta. Birch infligge 1D3 + 1D4 di bonus; trattandosi di Estremo si usa il massimo: Harvey incassa <strong>7 danni</strong> pieni.</p>
+      <p>Tocca a Harvey, accerchiato: reagisce. Harvey tira 25 (Normale), Birch 23 (Normale): parità, e poiché Harvey <em>reagisce</em>, in caso di parità vince l'attaccante — qui Harvey stesso — quindi colpisce per 1D3 = 2 danni. Fine del round.</p>
+    </div></details>
+    <p class="small">Usa il <a href="#dadi" onclick="go('dadi')">🎲 lanciatore</a> per gestire i tuoi tiri di combattimento.</p>
+  </section>
+
+  <!-- ===================== SANITÀ ===================== -->
+  <section class="doc" id="sanita" data-title="Sanità Mentale">
+    <h2 class="sec">Sanità Mentale</h2>
+    <blockquote>I Miti sono un anatema per la mente umana.<span class="src">— Manuale del Custode</span></blockquote>
+    <p>La Sanità Mentale è ciò che rende <em>Il Richiamo di Cthulhu</em> unico. Di fronte all'orrore cosmico, la mente degli investigatori si incrina. La follia scatta quando si perdono troppi <strong>Punti Sanità (SAN)</strong> in troppo poco tempo.</p>
+
+    <h3>I tiri di Sanità</h3>
+    <p>Davanti a una scena terrificante, il Custode chiede un <strong>tiro di Sanità</strong>: si tira 1D100 e si confronta con i SAN <em>attuali</em>. Un risultato pari o inferiore è un successo. Le perdite si scrivono come due numeri separati da una barra, ad esempio <strong>1/1D6</strong>: il numero a sinistra è la perdita se il tiro <em>riesce</em>, quello a destra (un tiro di dado) la perdita se <em>fallisce</em>.</p>
+    <div class="callout"><div class="lbl">Esempio di notazione</div><strong>0/1D6</strong> significa: se superi il tiro non perdi nulla; se lo fallisci perdi 1D6 punti.</div>
+    <p>I dadi bonus/malus <strong>non</strong> si applicano ai tiri di Sanità. Un tiro di Sanità fallito fa sempre perdere il controllo per un istante: il Custode sceglie un'azione involontaria (urlare, sobbalzare e lasciar cadere qualcosa, sterzare di colpo, irrigidirsi…). Un <strong>Maldestro</strong> sul tiro di Sanità fa perdere il <em>massimo</em> dei punti per quella situazione.</p>
+
+    <h3>Esempi di costo in Sanità</h3>
+    <table>
+      <thead><tr><th>Situazione</th><th>Perdita SAN</th></tr></thead>
+      <tbody>
+        <tr><td>Sorpresi da una carcassa di animale dilaniata</td><td>0/1D2</td></tr>
+        <tr><td>Sorpresi da un cadavere o parte di esso</td><td>0/1D3</td></tr>
+        <tr><td>Vedere un cadavere umano orribilmente mutilato</td><td>1/1D4+1</td></tr>
+        <tr><td>Svegliarsi intrappolati in una bara</td><td>0/1D6</td></tr>
+        <tr><td>Vedere un ghoul</td><td>0/1D6</td></tr>
+        <tr><td>Assistere alla morte violenta di un amico</td><td>0/1D6</td></tr>
+        <tr><td>Incontrare qualcuno che si sa essere morto</td><td>1/1D6+1</td></tr>
+        <tr><td>Subire torture atroci</td><td>0/1D10</td></tr>
+        <tr><td>Vedere un cadavere risorgere dalla tomba</td><td>1/1D10</td></tr>
+        <tr><td>Vedere il Grande Cthulhu</td><td>1D10/1D100</td></tr>
+      </tbody>
+    </table>
+
+    <h3>I tre stati di follia</h3>
+    <p>La follia può essere <strong>temporanea</strong>, <strong>indefinita</strong> o <strong>permanente</strong>, e attraversa tre fasi: un breve <em>attacco di follia</em>, un periodo di <em>follia latente</em> (con deliri, fobie e nuovi attacchi possibili) e infine il <em>recupero</em>.</p>
+    <ul>
+      <li><strong>Follia temporanea</strong>: se perdi <strong>5 o più SAN da un solo tiro</strong>, il Custode chiede un tiro di INT. Se lo <em>superi</em>, comprendi appieno l'orrore e impazzisci temporaneamente (1D10 ore). Se lo <em>fallisci</em>, la mente rimuove il ricordo e non impazzisci.</li>
+      <li><strong>Follia indefinita</strong>: se perdi <strong>un quinto o più dei tuoi SAN attuali in un solo "giorno" di gioco</strong>, diventi indefinitamente folle. Dura finché non guarisci o ti curi.</li>
+      <li><strong>Follia permanente</strong>: quando i SAN scendono a <strong>0</strong>, l'investigatore è folle in modo incurabile e cessa di essere un personaggio giocante.</li>
+    </ul>
+
+    <h3>Sanità massima e Miti di Cthulhu</h3>
+    <p>I SAN possono salire e scendere, ma non superano mai la <strong>Sanità massima</strong>, che parte da 99. Ogni punto guadagnato nell'abilità <strong>Miti di Cthulhu</strong> abbassa la Sanità massima della stessa quantità: <strong>Sanità massima = 99 − Miti di Cthulhu</strong>. Più si comprende l'universo reale, meno ci si può aggrappare alla sanità mentale.</p>
+    <details class="ex"><summary>Esempio — Harvey e il ghoul</summary><div class="body">
+      <p>Harvey segue una pista in una cripta e trova un ghoul che banchetta tra le bare. Tiro di Sanità (costo 0/1D6): ha 45 SAN e tira 83 — fallito. Il Custode descrive il suo grido involontario; Harvey perde 1D6 = 4 punti, scendendo a 41 SAN.</p>
+    </div></details>
+  </section>
+
+  <!-- ===================== MAGIA ===================== -->
+  <section class="doc" id="magia" data-title="Magia e incantesimi">
+    <h2 class="sec">Magia e incantesimi</h2>
+    <blockquote>Il cammino verso la conoscenza dei Miti conduce alla follia.<span class="src">— Manuale del Custode</span></blockquote>
+    <p>La magia dei Miti non è un superpotere: è corrosiva e proibita. Lanciare incantesimi divora la sanità mentale del lanciatore. Gli investigatori raramente ottengono incantesimi, e farne uso ha sempre un prezzo in mente e corpo.</p>
+
+    <h3>Punti Magia (PM)</h3>
+    <p>I <strong>Punti Magia</strong> (pari a POT ÷ 5) alimentano gli incantesimi. Si rigenerano naturalmente al ritmo di <strong>1 PM all'ora</strong> (2 all'ora se POT supera 100). Quando i PM arrivano a zero, ogni ulteriore costo viene pagato <strong>direttamente in Punti Ferita</strong> (uno a uno) — un'esperienza dolorosa e pericolosa.</p>
+
+    <h3>Lanciare un incantesimo</h3>
+    <p>Ogni incantesimo ha un <strong>costo</strong> (PM, punti Sanità e talvolta POT permanente), un <strong>tempo di lancio</strong> e un <strong>effetto</strong>. In combattimento, il tempo di lancio determina quando l'incantesimo si attiva: se è <em>istantaneo</em> scatta a DES+50 (come un'arma pronta); se richiede <em>un round</em> scatta alla propria DES in quel round; se ne richiede due, alla propria DES nel round successivo, e così via.</p>
+
+    <h3>Tiri di POT contrapposti e gittata</h3>
+    <p>Molti incantesimi richiedono un <strong>tiro di POT contrapposto</strong>: entrambi tirano e confrontano i livelli di successo, vince il più alto (a parità vince il POT maggiore). Se la differenza di POT è di 100 o più, il più potente vince automaticamente. La <strong>gittata</strong> di un incantesimo è di norma una di tre: <em>contatto</em>, <em>100 metri</em>, oppure <em>a vista</em>.</p>
+
+    <h3>Imparare un incantesimo e diventare un credente</h3>
+    <p>Gli incantesimi si imparano da <strong>tomi dei Miti</strong>, da un'altra persona o da un'entità dei Miti. Studiarli costa <strong>Sanità</strong>, in misura variabile. La fonte conta: più è pura, migliore (e meno costoso) è l'incantesimo; una traduzione incompleta dà una versione più debole e più cara.</p>
+
+    <h3>Magia profonda</h3>
+    <p>I maghi folli, liberi dalla sanità umana, attingono a poteri più grandi. Quando un investigatore <strong>folle</strong> (temporaneo o indefinito) lancia con successo un incantesimo, tira 1D100 contro la propria abilità <em>Miti di Cthulhu</em>: se riesce, scopre la <strong>versione profonda</strong> dell'incantesimo, più potente ma anche più orribile. Maggiore è il potere, maggiore è il prezzo.</p>
+
+    <h3>Un esempio dal Grimorio: Spartire il Ka (Apportion Ka)</h3>
+    <p>Questo incantesimo trasferisce parte dell'essenza vitale del lanciatore — il suo "<em>ka</em>" — in uno dei suoi organi vitali, che viene poi rimosso dal corpo e nascosto al sicuro. Finché l'organo resta nascosto, il mago è quasi <strong>invulnerabile</strong>.</p>
+    <table>
+      <thead><tr><th>Voce</th><th>Valore</th></tr></thead>
+      <tbody>
+        <tr><td>Costo</td><td>10 Punti Magia, 5 POT (permanenti) e 2D10 Sanità <em>per organo</em></td></tr>
+        <tr><td>Tempo di lancio</td><td>1 giorno per organo</td></tr>
+      </tbody>
+    </table>
+    <p>Il punto debole è il <strong>cervello</strong>: è la sede del potere dell'incantesimo e non può essere rimosso. Se il cervello viene distrutto, gli altri organi perdono le loro proprietà e il mago muore. L'invulnerabilità dipende dall'organo rimosso (tolti i polmoni, niente più annegamento o soffocamento; certi organi danno immunità al veleno). Le ferite riducono i PF come al solito, portando all'incoscienza ma non alla morte, che avviene solo distruggendo la testa. Fu usato per primo dai seguaci del Faraone Nero, <strong>Nephren-Ka</strong>. <em>Nomi alternativi: Infondere l'Essenza, Estrazione della Volontà.</em></p>
+    <div class="callout warn"><div class="lbl">Nota</div>È l'equivalente lovecraftiano del filatterio del lich: si nasconde una parte di sé per diventare quasi immortali, al prezzo terribile di sanità e potere.</div>
+  </section>
+
+  <!-- ===================== SCHEDA ===================== -->
+  <section class="doc" id="scheda" data-title="Scheda del personaggio">
+    <h2 class="sec">📜 Scheda del personaggio</h2>
+    <p>Inserisci le otto caratteristiche (valore pieno, da 1 a 99): metà e quinto, Punti Ferita, Punti Magia, Sanità, Bonus ai Danni e Corporatura vengono calcolati automaticamente.</p>
+    <div class="tool-card">
+      <h4 style="margin-top:0">Caratteristiche</h4>
+      <div class="sheet-grid" id="statGrid"></div>
+      <h4>Attributi derivati</h4>
+      <div class="derived" id="derivedBox"></div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+        <button class="btn primary" onclick="rollStats()">🎲 Genera caratteristiche casuali</button>
+        <button class="btn" onclick="resetStats()">Azzera</button>
+      </div>
+      <p class="small" style="margin-top:12px">Il tiro casuale usa: FOR/COS/DES/ASP/POT = 3D6×5; TAG/INT/ISTR = (2D6+6)×5; Fortuna = 3D6×5. I valori restano modificabili a mano.</p>
+    </div>
+  </section>
+
+  <!-- ===================== IA ===================== -->
+  <section class="doc" id="ia" data-title="Chiedi al Manuale">
+    <h2 class="sec">🤖 Chiedi al Manuale</h2>
+    <p>Questa sezione funziona come NotebookLM: collega la tua chiave API e poni domande a un'IA che risponde <strong>esclusivamente</strong> in base al contenuto di questo manuale. Le risposte sono in italiano.</p>
+    <div class="callout tip"><div class="lbl">Privacy</div>La tua chiave API resta salvata <strong>solo</strong> in questo browser (memoria locale) e viene inviata <em>direttamente</em> al provider che scegli (OpenAI o Google). Non passa da nessun altro server.</div>
+    <div class="tool-card">
+      <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end">
+        <div class="field" style="flex:0 0 auto"><label>Provider</label>
+          <select id="aiProvider"><option value="openai">OpenAI (ChatGPT)</option><option value="gemini">Google Gemini</option></select>
+        </div>
+        <div class="field" style="flex:1 1 260px"><label>Chiave API</label><input id="aiKey" type="password" placeholder="Incolla qui la tua chiave…"></div>
+        <button class="btn" style="flex:0 0 auto" onclick="saveKey()">Salva chiave</button>
+      </div>
+      <p class="small" id="keyStatus"></p>
+      <div id="aiChat"><div class="msg sys">Configura il provider e la chiave, poi fai una domanda sul regolamento (es. «Come funziona un impalamento?» o «Quanti Punti Magia ho con POT 60?»).</div></div>
+      <div class="ai-input">
+        <input id="aiQuestion" type="text" placeholder="Scrivi la tua domanda sul manuale…" onkeydown="if(event.key==='Enter')askAI()">
+        <button class="btn primary" onclick="askAI()">Invia</button>
+      </div>
+    </div>
+    <h3>Dove trovo una chiave API?</h3>
+    <p class="small">Per <strong>OpenAI</strong>: crea una chiave su <em>platform.openai.com → API keys</em>. Per <strong>Gemini</strong>: ottieni una chiave su <em>Google AI Studio → Get API key</em>. L'uso delle API è a carico del tuo account presso il provider.</p>
+  </section>
+
+  </main>
+</div>
+<script>
+const NAV=[
+  {grp:"Per cominciare",items:[["home","Benvenuto"],["cose","Cos'è il gioco"],["sistema","Il sistema di gioco"]]},
+  {grp:"Regole",items:[["personaggio","Creare l'investigatore"],["abilita","Le abilità"],["combattimento","Combattimento"],["sanita","Sanità Mentale"],["magia","Magia e incantesimi"]]},
+  {grp:"Strumenti",items:[["dadi","🎲 Lanciatore di dadi"],["scheda","📜 Scheda del personaggio"],["ia","🤖 Chiedi al Manuale"]]}
+];
+function buildToc(){
+  const toc=document.getElementById('toc');
+  NAV.forEach(g=>{
+    const h=document.createElement('div');h.className='grp';h.textContent=g.grp;toc.appendChild(h);
+    g.items.forEach(([id,label])=>{
+      const a=document.createElement('a');a.href='#'+id;a.dataset.id=id;a.textContent=label;
+      a.onclick=e=>{e.preventDefault();go(id);};toc.appendChild(a);
+    });
+  });
+}
+function go(id){
+  document.querySelectorAll('section.doc').forEach(s=>s.classList.toggle('active',s.id===id));
+  document.querySelectorAll('nav.toc a').forEach(a=>a.classList.toggle('active',a.dataset.id===id));
+  document.getElementById('sidebar').classList.remove('open');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(history.replaceState)history.replaceState(null,'','#'+id);
+}
+document.addEventListener('keydown',e=>{if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='TEXTAREA'){e.preventDefault();document.getElementById('search').focus();}});
+function setupSearch(){
+  const inp=document.getElementById('search');
+  inp.addEventListener('input',()=>{
+    const q=inp.value.toLowerCase().trim();
+    document.querySelectorAll('nav.toc a').forEach(a=>{
+      const id=a.dataset.id;const sec=document.getElementById(id);
+      const txt=(a.textContent+' '+(sec?sec.textContent:'')).toLowerCase();
+      a.classList.toggle('hidden',q&&!txt.includes(q));
+    });
+    document.querySelectorAll('nav.toc .grp').forEach(g=>{
+      let n=g.nextElementSibling,vis=false;
+      while(n&&!n.classList.contains('grp')){if(n.tagName==='A'&&!n.classList.contains('hidden'))vis=true;n=n.nextElementSibling;}
+      g.classList.toggle('hidden',q&&!vis);
+    });
+  });
+}
+function rnd(n){return Math.floor(Math.random()*n)+1;}
+function rollD100(){
+  const skill=Math.max(1,Math.min(99,parseInt(document.getElementById('skillVal').value)||50));
+  const diff=parseInt(document.getElementById('diffLvl').value);
+  const bd=parseInt(document.getElementById('bonusDie').value);
+  const units=Math.floor(Math.random()*10);
+  let tensRolls=[Math.floor(Math.random()*10)];
+  const extra=Math.abs(bd);
+  for(let i=0;i<extra;i++)tensRolls.push(Math.floor(Math.random()*10));
+  let tens;
+  if(bd>0)tens=Math.min.apply(null,tensRolls);
+  else if(bd<0)tens=Math.max.apply(null,tensRolls);
+  else tens=tensRolls[0];
+  let val=tens*10+units; if(val===0)val=100;
+  const target= diff===1?skill: diff===2?Math.floor(skill/2):Math.floor(skill/5);
+  let lvl,cls;
+  const fumbleFloor = skill<50?96:100;
+  if(val===1){lvl="Successo Critico!";cls="crit";}
+  else if(val>=fumbleFloor){lvl="Maldestro!";cls="fumble";}
+  else if(val<=Math.floor(skill/5)){lvl="Successo Estremo";cls="extreme";}
+  else if(val<=Math.floor(skill/2)){lvl="Successo Difficile";cls="hard";}
+  else if(val<=skill){lvl="Successo Normale";cls="regular";}
+  else {lvl="Fallimento";cls="fail";}
+  const passes = val<=target || val===1;
+  const diffName=diff===1?"Normale":diff===2?"Difficile":"Estremo";
+  let verdict = (val===1)?"✓ riuscito (critico)" : val>=fumbleFloor?"✗ maldestro" : passes?"✓ supera la prova "+diffName:"✗ non supera la prova "+diffName;
+  document.getElementById('d100result').innerHTML=
+    '<div class="roll">'+val+'</div><div class="lvl '+cls+'">'+lvl+'</div>'+
+    '<div class="small" style="margin-top:6px">Soglia '+diffName+': '+target+' — <strong>'+verdict+'</strong></div>';
+  logDice('1D100 = '+val+' ('+lvl+', soglia '+diffName+' '+target+')');
+}
+function rollDie(sides,count){
+  let parts=[],sum=0;
+  for(let i=0;i<count;i++){const r=rnd(sides);parts.push(r);sum+=r;}
+  logDice(count+'D'+sides+' = '+sum+(count>1?' ['+parts.join(', ')+']':''));
+}
+function logDice(t){
+  const log=document.getElementById('diceLog');
+  const d=document.createElement('div');d.textContent='🎲 '+t;
+  log.prepend(d);
+}
+function setupDice(){
+  const defs=[["1D3",3,1],["1D4",4,1],["1D6",6,1],["1D8",8,1],["1D10",10,1],["1D20",20,1],["2D6",6,2],["3D6",6,3],["2D10",10,2],["1D100",100,1]];
+  const grid=document.getElementById('otherDice');
+  defs.forEach(([lab,s,c])=>{
+    const b=document.createElement('button');b.className='btn';b.textContent=lab;
+    b.onclick=()=>rollDie(s,c);grid.appendChild(b);
+  });
+}
+const STATS=[["FOR","Forza"],["COS","Costituzione"],["TAG","Taglia"],["DES","Destrezza"],["ASP","Aspetto"],["INT","Intelligenza"],["POT","Potere"],["ISTR","Istruzione"],["FortunaC","Fortuna"]];
+function buildSheet(){
+  const grid=document.getElementById('statGrid');
+  STATS.forEach(([k,label])=>{
+    const d=document.createElement('div');d.className='stat';
+    d.innerHTML='<label>'+label+'</label><input id="st_'+k+'" type="number" min="0" max="99" oninput="updateDerived()"><div class="hv" id="hv_'+k+'">½ — / ⅕ —</div>';
+    grid.appendChild(d);
+  });
+  updateDerived();
+}
+function buildVal(sum){
+  const t=[[64,'−2'],[84,'−1'],[124,'Nessuno'],[164,'+1D4'],[204,'+1D6'],[284,'+2D6'],[364,'+3D6'],[444,'+4D6'],[524,'+5D6']];
+  const b=[[64,'−2'],[84,'−1'],[124,'0'],[164,'+1'],[204,'+2'],[284,'+3'],[364,'+4'],[444,'+5'],[524,'+6']];
+  let db='—',bu='—';
+  for(let i=0;i<t.length;i++){if(sum<=t[i][0]){db=t[i][1];break;}}
+  for(let i=0;i<b.length;i++){if(sum<=b[i][0]){bu=b[i][1];break;}}
+  return{db:db,bu:bu};
+}
+function updateDerived(){
+  const g=k=>parseInt(document.getElementById('st_'+k).value)||0;
+  STATS.forEach(([k])=>{
+    const v=g(k);
+    document.getElementById('hv_'+k).textContent='½ '+Math.floor(v/2)+' / ⅕ '+Math.floor(v/5);
+  });
+  const COS=g('COS'),TAG=g('TAG'),POT=g('POT'),FOR=g('FOR');
+  const pf=Math.floor((COS+TAG)/10);
+  const pm=Math.floor(POT/5);
+  const san=POT;
+  const r=buildVal(FOR+TAG);
+  const box=document.getElementById('derivedBox');
+  box.innerHTML=
+    derived('Punti Ferita',pf)+
+    derived('Punti Magia',pm)+
+    derived('Sanità',san)+
+    derived('Bonus Danni',r.db)+
+    derived('Corporatura',r.bu);
+}
+function derived(k,v){return '<div class="box"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>';}
+function rollStats(){
+  const set=(k,val)=>document.getElementById('st_'+k).value=val;
+  const t3=function(){return (rnd(6)+rnd(6)+rnd(6))*5;};
+  const t2=function(){return (rnd(6)+rnd(6)+6)*5;};
+  set('FOR',t3());set('COS',t3());set('DES',t3());set('ASP',t3());set('POT',t3());set('FortunaC',t3());
+  set('TAG',t2());set('INT',t2());set('ISTR',t2());
+  updateDerived();
+}
+function resetStats(){STATS.forEach(([k])=>document.getElementById('st_'+k).value='');updateDerived();}
+
+var MANUAL_CONTEXT="MANUALE DE 'IL RICHIAMO DI CTHULHU' (riassunto regole in italiano).\n\nCOS'E: GdR investigativo horror nei Miti di Lovecraft. Giocatori = INVESTIGATORI; il CUSTODE DEI SEGRETI e' il master. Strumento base: 1D100; si tira pari o sotto il valore per riuscire.\n\nSISTEMA: Livelli di successo: 01=Critico; <=QUINTO=Estremo; <=META=Difficile; <=valore pieno=Normale; sopra=Fallimento; 100 (o 96-100 se valore<50)=Maldestro. Difficolta: Normale(pieno)/Difficile(meta)/Estremo(quinto). Caratteristica avversaria 90+ rende la prova Estrema. Limite: 100+valore, oltre impossibile. Spingere un tiro: dopo un fallimento si ritira; se fallisce il Custode decide le conseguenze. NON si spingono Fortuna, Sanita, combattimento, ne tiri di danno/perdita Sanita. Dadi bonus/malus: dado decine extra; bonus tiene la decina piu bassa, malus la piu alta; max 2; si annullano. Tiri contrapposti: vince il livello piu alto. Tiro Idea (INT), Conoscenza (ISTR), Fortuna.\n\nCREAZIONE: 8 caratteristiche x5: FOR 3D6, COS 3D6, TAG (2D6+6), DES 3D6, ASP 3D6, INT (2D6+6), POT 3D6, ISTR (2D6+6). Fortuna 3D6x5. Valori meta e quinto. Eta 15-90 con modificatori. DERIVATI: PF=(COS+TAG)/10 arrotondato giu; PM=POT/5; Sanita iniziale=POT; Sanita massima=99-Miti di Cthulhu. Bonus Danni/Corporatura da FOR+TAG: 2-64=-2/-2; 65-84=-1/-1; 85-124=Nessuno/0; 125-164=+1D4/+1; 165-204=+1D6/+2; 205-284=+2D6/+3; 285-364=+3D6/+4; 365-444=+4D6/+5; 445-524=+5D6/+6. Il BD vale nel corpo a corpo, NON con armi da fuoco. Punti Occupazionali da ISTR; Interessi Personali = INTx2.\n\nABILITA: percentuali con valore base. Chiave: Scrutare, Biblioteca, Psicologia, Schivare(=meta DES), Combattere(Lottare), Armi da Fuoco, Primo Soccorso, Medicina, Furtivita, Persuadere. Miti di Cthulhu abbassa la Sanita massima. Le abilita di combattimento NON si spingono. Specializzazioni. Sviluppo: tira 1D100 per abilita usate; se >valore (o 96+) cresce di 1D10.\n\nCOMBATTIMENTO: round; ordine per DES (alta->bassa; a parita miglior abilita). Azioni: attaccare/manovra/fuggire/incantesimo/altro; si puo ritardare. Corpo a corpo=tiro contrapposto: il bersaglio REAGISCE (Combattere vs Combattere) o SCHIVA (Schivare vs Combattere); vince il livello migliore. Parita: se reagisce vince l'attaccante; se schiva vince il difensore; se entrambi falliscono nessun danno. Mani nude=1D3+BD. Successo Estremo (solo nel proprio turno): contundente=danno massimo; perforante=IMPALAMENTO (danno massimo + altro tiro). Manovre (disarmare/atterrare/immobilizzare): confronta Corporatura; chi e piu piccolo prende 1 malus per punto di differenza (max 2); differenza 3+=impossibile. Armi da fuoco: tiro NON contrapposto; difficolta per distanza (base=Normale; doppio=Difficile; quadruplo=Estremo). Arma pronta spara a DES+50. Bonus: mirare/bruciapelo/bersaglio grande. Malus: tuffarsi al riparo/bersaglio in corsa/copertura/colpi multipli/sparare in mischia. Non si schiva una pallottola. Armatura sottrae punti ai danni (pelle 1, kevlar pesante 8, militare 12). Sorpresa: il bersaglio non reagisce ne schiva. Inferiorita numerica: avversari ottengono dado bonus. FERITE: danno da UN colpo < meta PF max=normale; >= meta PF max=Ferita Grave (cade, tiro COS per non svenire); > PF max=morte. A 0 PF=incoscienza. Ferita Grave + 0 PF=MORENTE (tira COS ogni round, un fallimento=morte). Solo Primo Soccorso stabilizza un morente. CURE: Primo Soccorso (entro 1 ora)=+1 PF, unico modo per stabilizzare un morente (1 PF temporaneo). Medicina (min 1 ora)=+1D3 PF, non stabilizza un morente.\n\nSANITA: tiro 1D100 vs SAN attuali. Perdita X/Y: X se riesci, Y (tiro) se fallisci (es. 0/1D6). Bonus/malus non si applicano. Fallimento=azione involontaria. Maldestro=perdita massima. Esempi: carcassa 0/1D2; cadavere 0/1D3; cadavere mutilato 1/1D4+1; bara 0/1D6; ghoul 0/1D6; morte amico 0/1D6; persona morta 1/1D6+1; tortura 0/1D10; cadavere risorge 1/1D10; Grande Cthulhu 1D10/1D100. Follia TEMPORANEA: perdi 5+ SAN da un tiro -> tiro INT; se RIESCI impazzisci (1D10 ore); se FALLISCI rimuovi il ricordo. INDEFINITA: perdi un quinto+ dei SAN attuali in un giorno. PERMANENTE: SAN a 0=folle incurabile. Sanita massima=99-Miti di Cthulhu; i SAN non la superano mai.\n\nMAGIA: PM=POT/5; rigenerano 1/ora (2/ora se POT>100). A 0 PM si paga in PF (1 a 1). Incantesimo: costo (PM/Sanita/talvolta POT permanente), tempo di lancio, effetto. In combattimento: istantaneo=DES+50; 1 round=propria DES; 2 round=DES round successivo. Tiri POT contrapposti; differenza POT 100+=vince il piu potente. Gittata: contatto/100 metri/a vista. Imparare costa Sanita. Magia profonda: lanciatore FOLLE che riesce tira 1D100 vs Miti di Cthulhu; se riesce sblocca la versione profonda. Esempio 'Spartire il Ka' (Apportion Ka): costo 10 PM, 5 POT permanenti, 2D10 Sanita per organo; tempo 1 giorno/organo. Trasferisce il 'ka' in un organo poi rimosso e nascosto = quasi invulnerabilita. Punto debole: il cervello non si puo rimuovere; distruggerlo uccide il mago. Usato dai seguaci di Nephren-Ka.";
+
+function saveKey(){
+  const k=document.getElementById('aiKey').value.trim();
+  const p=document.getElementById('aiProvider').value;
+  if(!k){document.getElementById('keyStatus').textContent='Inserisci una chiave prima di salvare.';return;}
+  try{localStorage.setItem('coc_ai_key',k);localStorage.setItem('coc_ai_provider',p);}catch(e){}
+  document.getElementById('keyStatus').textContent='✓ Chiave salvata localmente in questo browser.';
+}
+function loadKey(){
+  try{
+    const k=localStorage.getItem('coc_ai_key'),p=localStorage.getItem('coc_ai_provider');
+    if(k)document.getElementById('aiKey').value=k;
+    if(p)document.getElementById('aiProvider').value=p;
+    if(k)document.getElementById('keyStatus').textContent='✓ Chiave caricata dalla memoria locale.';
+  }catch(e){}
+}
+function addMsg(role,text){
+  const chat=document.getElementById('aiChat');
+  const d=document.createElement('div');d.className='msg '+role;d.textContent=text;
+  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;return d;
+}
+async function askAI(){
+  const q=document.getElementById('aiQuestion').value.trim();
+  if(!q)return;
+  const key=document.getElementById('aiKey').value.trim();
+  const provider=document.getElementById('aiProvider').value;
+  if(!key){addMsg('sys','⚠️ Inserisci e salva una chiave API prima di fare domande.');return;}
+  addMsg('user',q);
+  document.getElementById('aiQuestion').value='';
+  const thinking=addMsg('ai','…');
+  const system="Sei un assistente esperto del gioco di ruolo Il Richiamo di Cthulhu. Rispondi SEMPRE in italiano. Rispondi ESCLUSIVAMENTE in base al CONTENUTO DEL MANUALE qui sotto. Se la risposta non e' nel manuale, dillo chiaramente (Questa informazione non e' presente nel manuale) e non inventare. Sii preciso.\n\n=== CONTENUTO DEL MANUALE ===\n"+MANUAL_CONTEXT;
+  try{
+    let answer;
+    if(provider==='openai'){
+      const r=await fetch('https://api.openai.com/v1/chat/completions',{
+        method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+        body:JSON.stringify({model:'gpt-4o-mini',messages:[{role:'system',content:system},{role:'user',content:q}],temperature:0.2})
+      });
+      const j=await r.json();
+      if(j.error)throw new Error(j.error.message);
+      answer=j.choices[0].message.content;
+    }else{
+      const r=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='+encodeURIComponent(key),{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:'user',parts:[{text:q}]}],generationConfig:{temperature:0.2}})
+      });
+      const j=await r.json();
+      if(j.error)throw new Error(j.error.message);
+      answer=j.candidates[0].content.parts[0].text;
+    }
+    thinking.textContent=answer;
+  }catch(e){
+    thinking.textContent='❌ Errore: '+e.message+'  (Verifica chiave, provider e connessione.)';
+  }
+}
+buildToc();setupSearch();setupDice();buildSheet();loadKey();
+var initial=(location.hash||'#home').slice(1);
+if(document.getElementById(initial))go(initial);
+</script>
+</body>
+</html>
